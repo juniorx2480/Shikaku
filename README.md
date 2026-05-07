@@ -1,4 +1,4 @@
-# Backend: FastAPI (Local sin Docker)
+# Backend: 
 
 Instalación rápida:
 
@@ -10,7 +10,6 @@ pip install -r requirements.txt
 
 Variables de entorno (usar `.env`):
 
-- `DATABASE_URL` opcional. Por defecto usa `sqlite:///shikaku.db`
 
 Ejecutar app de desarrollo:
 
