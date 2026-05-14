@@ -10,8 +10,12 @@ Endpoints principales:
 """
 
 import time
+import random
+from typing import Any, List
 from fastapi import FastAPI, Depends, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
 from sqlmodel import Session, select
 
 from . import models
@@ -21,6 +25,67 @@ from .schemas import (
     SolutionCreate, SolutionRead
 )
 from .shikaku_solver import solve_shikaku
+
+
+def generate_shikaku_grid(rows: int, cols: int) -> List[List[int]]:
+    """Genera una grilla Shikaku basica dividiendo recursivamente"""
+    grid = [[0 for _ in range(cols)] for _ in range(rows)]
+    
+    def divide(r1: int, c1: int, r2: int, c2: int):
+        height = r2 - r1
+        width = c2 - c1
+        if height <= 1 or width <= 1:
+            area = height * width
+            nr = random.randint(r1, r2 - 1)
+            nc = random.randint(c1, c2 - 1)
+            grid[nr][nc] = area
+            return
+        
+        if random.choice([True, False]):
+            split = random.randint(r1 + 1, r2 - 1)
+            divide(r1, c1, split, c2)
+            divide(split, c1, r2, c2)
+        else:
+            split = random.randint(c1 + 1, c2 - 1)
+            divide(r1, c1, r2, split)
+            divide(r1, split, r2, c2)
+    
+    divide(0, 0, rows, cols)
+    return grid
+
+
+def normalize_grid(raw_grid: List[List[Any]]) -> List[List[int]]:
+    if not isinstance(raw_grid, list) or not raw_grid:
+        raise ValueError("Grid must be a non-empty two-dimensional list")
+
+    normalized: List[List[int]] = []
+    row_length = None
+
+    for row in raw_grid:
+        if not isinstance(row, list):
+            raise ValueError("Grid must be a 2D list")
+        if row_length is None:
+            row_length = len(row)
+        elif len(row) != row_length:
+            raise ValueError("All rows must have the same number of columns")
+
+        normalized_row: List[int] = []
+        for value in row:
+            if isinstance(value, str):
+                trimmed = value.strip()
+                if trimmed == "" or trimmed == "0":
+                    normalized_row.append(0)
+                else:
+                    normalized_row.append(int(trimmed))
+            elif isinstance(value, bool):
+                raise ValueError("Grid values must be numeric or empty")
+            elif isinstance(value, (int, float)):
+                normalized_row.append(int(value))
+            else:
+                raise ValueError("Grid values must be numeric or empty")
+        normalized.append(normalized_row)
+
+    return normalized
 
 
 app = FastAPI(
@@ -38,6 +103,9 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Sirve archivos estáticos
+app.mount("/static", StaticFiles(directory="static"), name="static")
+
 
 @app.on_event("startup")
 def on_startup():
@@ -51,12 +119,8 @@ def on_startup():
 
 @app.get("/", tags=["Health"])
 def root():
-    """Verifica estado basico de API"""
-    return {
-        "status": "ok",
-        "message": "Shikaku Solver API is running",
-        "version": "1.0.0"
-    }
+    """Sirve la interfaz del frontend"""
+    return FileResponse("static/index.html")
 
 
 @app.get("/health", tags=["Health"])
@@ -209,13 +273,14 @@ def solve_puzzle_direct(
         if not request.grid or len(request.grid) == 0:
             raise ValueError("Grid cannot be empty")
         
-        cols = len(request.grid[0])
-        if not all(len(row) == cols for row in request.grid):
+        grid = normalize_grid(request.grid)
+        cols = len(grid[0])
+        if not all(len(row) == cols for row in grid):
             raise ValueError("All rows must have the same number of columns")
         
         # Mide tiempo de resolucion
         start_time = time.time()
-        solution = solve_shikaku(request.grid)
+        solution = solve_shikaku(grid)
         elapsed_time = (time.time() - start_time) * 1000  # Convierte a milisegundos
         
         if solution:
@@ -316,6 +381,23 @@ def get_puzzle_solutions(
         )
         for s in solutions
     ]
+
+
+# ========================
+# Generador de puzzles
+# ========================
+
+@app.get("/api/generate", tags=["Generator"])
+def generate_puzzle(rows: int = 9, cols: int = 9):
+    """Genera un puzzle Shikaku basico de tamano dado"""
+    if rows < 1 or cols < 1 or rows > 20 or cols > 20:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Rows and cols must be between 1 and 20"
+        )
+    
+    grid = generate_shikaku_grid(rows, cols)
+    return {"grid": grid, "rows": rows, "cols": cols}
 
 
 # ========================

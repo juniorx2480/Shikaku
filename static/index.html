@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shikaku Solver</title>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Shikaku Solver</h1>
+        <div class="selection">
+            <button id="ai-solve">Usar IA para solucionar</button>
+            <button id="receive-puzzle">Recibir el shikaku</button>
+            <button id="user-solve">Usuario resuelve el shikaku</button>
+        </div>
+        
+        <div id="ai-solve-section" class="section hidden">
+            <h2>Resolver con IA</h2>
+            <p>Se usará la matriz cargada en "Recibir Puzzle" si está disponible.</p>
+            <form id="solve-form">
+                <label for="grid-input">Ingresa la grilla del puzzle (JSON array):</label>
+                <textarea id="grid-input" rows="10" placeholder='[[3,0,2],[0,1,0],[0,0,4]]'></textarea>
+                <button type="submit">Resolver</button>
+            </form>
+            <div id="result"></div>
+            <div id="solution-grid"></div>
+        </div>
+        
+        <div id="receive-puzzle-section" class="section hidden">
+            <h2>Recibir Puzzle</h2>
+            <p>Introduce la matriz JSON que usarán IA y usuario. Usa 0 o cadenas vacías para celdas vacías.</p>
+            <textarea id="matrix-input" rows="10" placeholder='[[3,0,2],[0,1,0],[0,0,4]]'></textarea>
+            <button id="load-matrix">Cargar Matriz</button>
+            <div id="loaded-puzzle"></div>
+        </div>
+        
+        <div id="user-solve-section" class="section hidden">
+            <h2>Resolver Manualmente</h2>
+            <p>Solo puedes resolver el puzzle cargado desde "Recibir Puzzle". Selecciona un número y define el rectángulo.</p>
+            <div id="manual-controls" class="manual-controls hidden">
+                <p id="selected-anchor">Celda seleccionada: ninguna</p>
+                <label for="rect-row">Fila inicio:</label>
+                <input id="rect-row" type="number" min="0" value="0">
+                <label for="rect-col">Columna inicio:</label>
+                <input id="rect-col" type="number" min="0" value="0">
+                <label for="rect-width">Ancho:</label>
+                <input id="rect-width" type="number" min="1" value="1">
+                <label for="rect-height">Alto:</label>
+                <input id="rect-height" type="number" min="1" value="1">
+                <button id="add-rect">Agregar rectángulo</button>
+                <button id="reset-manual">Resetear manual</button>
+                <div id="manual-message"></div>
+                <div id="manual-rect-list"></div>
+            </div>
+            <div id="manual-puzzle"></div>
+        </div>
+    </div>
+    <script src="/static/script.js"></script>
+</body>
+</html>

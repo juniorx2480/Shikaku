@@ -1,0 +1,143 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f0f0f0;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.container {
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    max-width: 600px;
+    width: 100%;
+}
+
+h1 {
+    text-align: center;
+    color: #333;
+}
+
+.selection {
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: 20px;
+}
+
+button {
+    padding: 10px 20px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+button:hover {
+    background-color: #45a049;
+}
+
+.section {
+    margin-top: 20px;
+}
+
+.hidden {
+    display: none;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+}
+
+label {
+    margin-bottom: 5px;
+}
+
+textarea {
+    margin-bottom: 10px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-family: monospace;
+}
+
+#result {
+    margin-top: 20px;
+    padding: 10px;
+    background-color: #f9f9f9;
+    border-radius: 4px;
+}
+
+.puzzle-grid {
+    border-collapse: collapse;
+    margin-top: 10px;
+}
+
+.puzzle-grid td {
+    border: 1px solid #ccc;
+    padding: 8px;
+    text-align: center;
+    width: 30px;
+    height: 30px;
+    cursor: pointer;
+    transition: background-color 0.15s ease;
+}
+
+.puzzle-grid td:hover {
+    background-color: #f0f8ff;
+}
+
+..puzzle-grid td.assigned {
+    font-weight: bold;
+}
+
+.puzzle-grid td.correct-cell {
+    background-color: #c5f4c3;
+    border: 2px solid #000;
+}
+
+.puzzle-grid td.incorrect-cell {
+    background-color: #f8d7da;
+    border: 2px solid #c00;
+}
+
+.puzzle-grid td.selected {
+    outline: 2px dashed #333;
+}
+
+.manual-controls {
+    margin-bottom: 20px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 10px;
+    align-items: end;
+}
+
+.manual-controls input,
+.manual-controls button {
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.manual-controls button {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+.manual-controls button:hover {
+    background-color: #45a049;
+}
+
+.error {
+    color: #b00020;
+}
